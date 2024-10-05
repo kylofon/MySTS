@@ -1,45 +1,7 @@
-# Define the Card class
-class Card:
-    def __init__(self, name, description, energy_cost, allowed_class):
-        self.name = name
-        self.description = description
-        self.energy_cost = energy_cost
-        self.allowed_class = allowed_class
+# main.py
 
-    # Method to play an attack card
-    def play_attack(self, player, target):
-        if player.character_class == self.allowed_class:
-            print(f"\n{self.name} played by {player.character_class}: {self.description}")
-            damage = 6  # Strike deals 6 damage
-
-            # Apply block first
-            print(f"Before damage: Target has {target.health_current} HP and {target.block} block.")
-            if target.block > 0:
-                if target.block >= damage:
-                    print(f"Damage ({damage}) is fully blocked by {target.block} block.")
-                    target.block -= damage
-                    damage = 0
-                else:
-                    print(f"Damage ({damage}) is partially blocked. {target.block} block reduces damage to {damage - target.block}.")
-                    damage -= target.block
-                    target.block = 0
-
-            target.health_current -= damage  # Deduct remaining damage from health
-            if target.health_current < 0:
-                target.health_current = 0  # Ensure health doesn't go below 0
-            print(f"After damage: Target has {target.health_current} HP and {target.block} block remaining.\n")
-        else:
-            print(f"{self.name} cannot be played by this class.")
-
-    # Method to play a defense card (applies block to self)
-    def play_defense(self, player):
-        if player.character_class == self.allowed_class:
-            print(f"\n{self.name} played by {player.character_class}: {self.description}")
-            print(f"Before block: {player.character_class} has {player.health_current} HP and {player.block} block.")
-            player.block += 5  # Add 5 block points to the player casting the card
-            print(f"After block: {player.character_class} has {player.block} block (added 5 block).\n")
-        else:
-            print(f"{self.name} cannot be played by this class.")
+from card import Card
+from effects import apply_damage, add_block
 
 # Define the Character class (including active effects)
 class Character:
@@ -82,11 +44,11 @@ test_block_card = Card("Test Block Card", "Gain 5 block", 1, "Enemy")
 
 # Step 1: Slime plays the Test Block Card (block is applied to Slime itself)
 print(f"\n--- Turn 1: Slime [S] Plays Test Block Card ---")
-test_block_card.play_defense(enemy_character)
+add_block(enemy_character, 5)
 
 # Step 2: Player plays Strike card on Slime (damage is dealt to the Slime)
 print(f"\n--- Turn 2: Player Plays Strike ---")
-strike_card.play_attack(player_character, enemy_character)
+apply_damage(enemy_character, 6)
 
 # Step 3: Display the final status of both player and enemy
 print(f"\n--- Final Status ---")
