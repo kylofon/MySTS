@@ -1,10 +1,10 @@
 # effects.py
 
-from coremechanics import action_immediate
+from actions import action_immediate
 
 def apply_damage(target, damage):
     def action(damage):
-        original_damage = damage  # Keep track of the original damage
+        original_damage = damage
         if target.block > 0:
             if target.block >= original_damage:
                 print(f"Damage ({original_damage}) is fully blocked by {target.block} block.")
@@ -16,10 +16,10 @@ def apply_damage(target, damage):
                 target.block = 0
         target.health_current -= damage
         if target.health_current < 0:
-            target.health_current = 0  # Ensure health doesn't go below 0
+            target.health_current = 0
         print(f"After damage: Target has {target.health_current} HP and {target.block} block remaining.\n")
 
-    action_immediate(lambda: action(damage))  # Pass damage as a parameter to the action function
+    action_immediate(lambda: action(damage))
 
 def add_block(player, block_amount):
     def action():

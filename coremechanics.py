@@ -1,42 +1,81 @@
-# effects.py
+# coremechanics.py
 
-def apply_damage(target, damage_amount):
-    print(f"Dealing {damage_amount} damage to {target.character_class}.")
-    target.health_current -= damage_amount
-    if target.health_current <= 0:
-        target.is_alive = False# coremechanics.py
+from actions import action_immediate
+from effects import apply_damage
+from trackers import trackerset_debug
 
-from combat import combat_instance
-from player import player_character
+# Initialize the player's hand with starting cards
+def initialize_hand():
+    return ["Strike", "Strike", "Strike", "Strike"]  # You can expand this list later
 
-# Play a card if the player has enough energy, or skip energy calculation if flag is set to "no"
-def play_card(card, player, target, action):
-    if player.player == "no" or player.energy >= card.energy_cost:
-        print(f"\n{card.name} played by {player.character_class}: {card.description} (Cost: {card.energy_cost} energy)")
-        if player.player == "yes":
-            player.energy -= card.energy_cost  # Deduct the energy cost only if it's a player character
-        action(target)
-        print(f"{player.character_class} now has {player.energy} energy left.\n")
-    else:
-        print(f"Not enough energy to play {card.name}! {player.character_class} has {player.energy} energy.")
+# Function to choose a target from available enemies
+def choose_target(enemies):
+    while True:
+        print("\n--- Choose target ---")
+        for i, enemy in enumerate(enemies):
+            print(f"{i + 1}. {enemy.name} ({enemy.health_current} HP)")
+        try:
+            choice = int(input("Select a target: ")) - 1
+            if 0 <= choice < len(enemies):
+                return enemies[choice]
+            else:
+                print("Invalid choice. Please select a valid target.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number.")
 
-# Restore player's energy and execute end-of-turn actions
-def end_turn():
-    print("\nEnd of Turn:")
-    player_character.energy = 3  # Restore player's energy to default
-    print(f"Player's energy restored to {player_character.energy}.")
+# Function to display current hand and ask for card selection
+def player_phase(player, enemies, hand):
+    while True:
+        if not enemies:
+            print("\nAll enemies are dead. Combat ends.")
+            return "end_turn"
 
-    # Execute actions in the queue
-    if combat_instance.action_queue:
-        print("Executing end-of-turn actions...")
-        for action in combat_instance.action_queue:
-            action()
-        combat_instance.action_queue.clear()
+        # Step 1: Choose a target
+        target = choose_target(enemies)
 
-# Define action types
-def action_immediate(action):
-    action()
+        print("\n--- Your current hand ---")
+        for i, card in enumerate(hand):
+            print(f"{i + 1}. {card}")
+        print("E. End turn")
 
-def action_end_of_turn(action):
-    combat_instance.add_action_to_queue(action)
-    print("Action added to end-of-turn queue.")
+        # Input from the player
+        choice = input("Choose a card to play or press 'E' to end turn: ")
+
+        # End turn if 'E' is pressed
+        if choice.lower() == 'e':
+            print("\nEnd of turn!")
+            return "end_turn"
+
+        try:
+            # Convert choice to a number and play the corresponding card
+            card_index = int(choice) - 1
+            if 0 <= card_index < len(hand):
+                card = hand.pop(card_index)  # Remove the selected card from the hand
+                print(f"\nYou played {card} on {target.name}!")
+
+                # Apply card effect (assuming Strike deals 6 damage)
+                if card == "Strike":
+                    play_card("Strike", player, target, lambda t: apply_damage(t, 6))
+
+                # Show updated trackers for player and target
+                trackerset_debug(player)
+                trackerset_debug(target)
+
+                # Check if the target is dead
+                if target.health_current <= 0:
+                    print(f"\n{target.name} is dead!")
+                    enemies.remove(target)
+
+                # Check if all cards have been played
+                if not hand:
+                    print("\nNo more cards to play.")
+                    return "end_turn"
+            else:
+                print("Invalid choice. Please select a valid card number.")
+        except ValueError:
+            print("Invalid input. Please enter a valid card number.")
+
+# Play card with an effect
+def play_card(card_name, player, target, action):
+    print(f"\n{card_name} played by {player.character_class}: Deals 6 damage to {target.name}")
+    action(target)
