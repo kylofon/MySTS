@@ -7,6 +7,6 @@ class Card:
         self.energy_cost = energy_cost
         self.allowed_class = allowed_class
 
-    # Method to describe the card when played
-    def describe(self):
-        return f"{self.name}: {self.description} (Cost: {self.energy_cost})"
+# Define individual cards
+strike_card = Card("Strike", "Deals 6 damage", 1, "Test")
+test_block_card = Card("Test Block Card", "Gain 5 block", 0, "Enemy")  # Set energy cost to 0
