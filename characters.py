@@ -1,4 +1,4 @@
-# characters.py
+# characters.py (template for player character)
 
 class Character:
     def __init__(self, character_class):
