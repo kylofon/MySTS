@@ -7,6 +7,7 @@ import coremechanics
 import effects
 import enemies
 import trackers
+import map as game_map
 
 # Main Menu Functionality
 def main_menu():
@@ -16,9 +17,17 @@ def main_menu():
         choice = input("Choose an option: ")
 
         if choice == '1':
-            class_select()
+            new_game()
         else:
             print("Invalid choice, please try again.")
+
+# New Game Functionality
+def new_game():
+    # Generate a new map
+    current_map = game_map.generate_map()
+
+    # Start class selection and scenario
+    class_select()
 
 # Class Selection Functionality
 def class_select():
