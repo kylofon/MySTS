@@ -5,8 +5,9 @@ class Card:
         self.name = name
         self.description = description
         self.energy_cost = energy_cost
-        self.allowed_class = allowed_class
+        self.allowed_class = allowed_class if isinstance(allowed_class, list) else [allowed_class]
 
 # Define individual cards
-strike_card = Card("Strike", "Deals 6 damage", 1, "Test")
-test_block_card = Card("Test Block Card", "Gain 5 block", 0, "Enemy")  # Set energy cost to 0
+card_ironclad_strike = Card("Strike", "Deals 6 damage", 1, ["Ironclad", "Enemy"])
+card_ironclad_defend = Card("Defend", "Gain 5 block", 1, ["Ironclad", "Enemy"])
+card_enemy_tackle = Card("Defend", "Deals 5 damage", 1, ["Enemy"])

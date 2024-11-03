@@ -12,5 +12,5 @@ class Enemy(Character):
 
 # List of possible enemies
 enemy_list = [
-    Enemy("Slime [S]", 12)  # Slime with 12 health
+    Enemy("Spike slime [S]", 12)  # Slime with 12 health
 ]
